@@ -10,7 +10,7 @@ variable "location" {
 
 variable "address_space" {
   description = "The address space for the virtual network"
-  type        = string
+  type        = list(string)
 }
 
 variable "subnet_prefixes" {
@@ -21,4 +21,15 @@ variable "subnet_prefixes" {
 variable "virtual_network_name" {
   description = "The name of the virtual network"
   type        = string
+}
+
+variable "admin_username" {
+  description = "The admin username for the virtual machines"
+  type        = string
+}
+
+variable "admin_password" {
+  description = "The admin password for the virtual machines"
+  type        = string
+  sensitive   = true
 }
