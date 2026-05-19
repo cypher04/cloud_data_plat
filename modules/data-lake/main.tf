@@ -9,6 +9,8 @@ resource "azurerm_storage_account" "cloudstorage" {
   
 }
 
+
+
 resource "azurerm_storage_data_lake_gen2_filesystem" "cloudfilesystem" {
   name               = "cloudfilesystem"
   storage_account_id = azurerm_storage_account.cloudstorage.id
@@ -16,6 +18,33 @@ resource "azurerm_storage_data_lake_gen2_filesystem" "cloudfilesystem" {
   properties = {
     hello = "aGVsbG8="
   }
+}
+
+resource "azurerm_storage_data_lake_gen2_path" "cloudpath" {
+  path               = "cloudpath"
+  filesystem_name    = azurerm_storage_data_lake_gen2_filesystem.cloudfilesystem.name
+  storage_account_id = azurerm_storage_account.cloudstorage.id
+  resource           = "directory"
+}
+
+resource "azurerm_storage_container" "cloudcontainer" {
+  name                  = "Raw"
+  storage_account_id  = azurerm_storage_account.cloudstorage.id
+  container_access_type = "private"
+}
+
+resource "azurerm_storage_container" "cloudcontainer2" {
+  name                  = "Processed"
+  storage_account_id  = azurerm_storage_account.cloudstorage.id
+  container_access_type = "private"
   
+}
+
+resource "azurerm_storage_container" "cloudcontainer3" {
+  name                  = "Curated"
+  storage_account_id  = azurerm_storage_account.cloudstorage.id
+  container_access_type = "private"
+  
+
 }
 
