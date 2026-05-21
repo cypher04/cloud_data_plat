@@ -13,3 +13,11 @@ resource "azurerm_synapse_workspace" "synapse_workspace" {
   }
 
 }
+
+resource "azurerm_synapse_sql_pool" "sql_pool" {
+  name                = "cloudsynapsesqlpool"
+  synapse_workspace_id = azurerm_synapse_workspace.synapse_workspace.id
+  create_mode = "Default"
+  storage_account_type = "GRS"
+  sku_name            = "DW100c"
+}
