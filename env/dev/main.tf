@@ -7,6 +7,12 @@ data "azurerm_client_config" "current" {
 
 }
 
+resource "azurerm_user_assigned_identity" "uai" {
+  name                = "uai-${var.resource_group_name}"
+  resource_group_name = azurerm_resource_group.clouddata-rg.name
+  location            = var.location
+}
+
 module "data-factory" {
     source              = "../../modules/data-factory"
     resource_group_name = azurerm_resource_group.clouddata-rg.name
