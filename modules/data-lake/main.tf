@@ -28,20 +28,20 @@ resource "azurerm_storage_data_lake_gen2_path" "cloudpath" {
 }
 
 resource "azurerm_storage_container" "cloudcontainer" {
-  name                  = "Raw"
+  name                  = "raw"
   storage_account_id  = azurerm_storage_account.cloudstorage.id
   container_access_type = "private"
 }
 
 resource "azurerm_storage_container" "cloudcontainer2" {
-  name                  = "Processed"
+  name                  = "processed"
   storage_account_id  = azurerm_storage_account.cloudstorage.id
   container_access_type = "private"
   
 }
 
 resource "azurerm_storage_container" "cloudcontainer3" {
-  name                  = "Curated"
+  name                  = "curated"
   storage_account_id  = azurerm_storage_account.cloudstorage.id
   container_access_type = "private"
   
