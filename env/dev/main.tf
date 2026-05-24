@@ -52,6 +52,25 @@ module "synapse" {
     admin_password      = var.admin_password
     storage_account_id = module.data-lake.storage_account_id
     storage_datalake_gen2_id = module.data-lake.storage_datalake_gen2_id
+    synapse_firewall_name = module.security.synapse_firewall_name
 
+}
 
+module "security" {
+    source              = "../../modules/security"
+    resource_group_name = azurerm_resource_group.clouddata-rg.name
+    location            = var.location
+    synapse_workspace_id = module.synapse.synapse_workspace_id
+}
+
+module "private_endpoint" {
+    source              = "../../modules/private_endpoint"
+    resource_group_name = azurerm_resource_group.clouddata-rg.name
+    location            = var.location
+    synapse_workspace_id = module.synapse.synapse_workspace_id
+    storage_datalake_gen2_id = module.data-lake.storage_datalake_gen2_id
+    vnet_id = module.networking.vnet_id
+    subnet_ids = module.networking.subnet_ids
+    synapse_sql_pool_id = module.synapse.synapse_sql_pool_id
+    synapse_storage_account_id = module.synapse.synapse_storage_account_id
 }
