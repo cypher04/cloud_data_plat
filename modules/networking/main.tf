@@ -42,3 +42,10 @@ resource "azurerm_subnet" "cloud-subnet-synapse" {
     virtual_network_name = azurerm_virtual_network.cloud-network.name
     address_prefixes     = [var.subnet_prefixes["synapse-compute"]]
 }
+
+resource "azurerm_subnet" "cloud-subnet-hdinsight" {
+    name                 = "cloud-subnet-hdinsight"
+    resource_group_name  = var.resource_group_name
+    virtual_network_name = azurerm_virtual_network.cloud-network.name
+    address_prefixes     = [var.subnet_prefixes["hdinsight"]]
+}
