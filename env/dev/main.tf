@@ -74,3 +74,35 @@ module "private_endpoint" {
     synapse_sql_pool_id = module.synapse.synapse_sql_pool_id
     synapse_storage_account_id = module.synapse.synapse_storage_account_id
 }
+
+module "hdinsights" {
+    source              = "../../modules/hdinsights"
+    resource_group_name = azurerm_resource_group.clouddata-rg.name
+    location            = var.location
+    kafka_gateway_name = var.kafka_gateway_name
+    kafka_gateway_password = var.kafka_gateway_password
+    kafka_head_node_username = var.kafka_head_node_name
+    kafka_head_node_password = var.kafka_head_node_password
+    kafka_worker_node_username = var.kafka_worker_node_name
+    kafka_worker_node_password = var.kafka_worker_node_password
+    kafka_zookeeper_node_username = var.kafka_zookeeper_node_name
+    kafka_zookeeper_node_password = var.kafka_zookeeper_node_password
+    vnet_id = module.networking.vnet_id
+    subnet_ids = module.networking.subnet_ids
+    keyvault_name = module.keyvault.keyvault_name
+    
+}
+
+module "keyvault" {
+    source              = "../../modules/keyvault"
+    resource_group_name = azurerm_resource_group.clouddata-rg.name
+    location            = var.location
+    kafka_gateway_name = var.kafka_gateway_name
+    kafka_gateway_password = var.kafka_gateway_password
+    kafka_head_node_name = var.kafka_head_node_name
+    kafka_head_node_password = var.kafka_head_node_password
+    kafka_worker_node_name = var.kafka_worker_node_name
+    kafka_worker_node_password = var.kafka_worker_node_password
+    kafka_zookeeper_node_name = var.kafka_zookeeper_node_name
+    kafka_zookeeper_node_password = var.kafka_zookeeper_node_password
+}
