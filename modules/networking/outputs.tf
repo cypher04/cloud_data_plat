@@ -10,7 +10,8 @@ output "subnet_ids" {
     azurerm_subnet.cloud-subnet-db.id,
     azurerm_subnet.cloud-subnet-1.id,
     azurerm_subnet.cloud-subnet-2.id,
-    azurerm_subnet.cloud-subnet-synapse.id
+    azurerm_subnet.cloud-subnet-synapse.id,
+    azurerm_subnet.cloud-subnet-hdinsight.id
   ]
 }
 
