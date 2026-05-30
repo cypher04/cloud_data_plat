@@ -9,3 +9,8 @@ output "synapse_sql_pool_id" {
 output "synapse_storage_account_id" {
     value = azurerm_storage_account.synapse_storage_account.id
 }
+
+// output the synapse connectivity endpoints sql, web, dev, sql_on_demand
+output "synapse_connectivity_endpoints" {
+    value = azurerm_synapse_workspace.synapse_workspace.connectivity_endpoints
+}
