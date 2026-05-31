@@ -23,7 +23,7 @@ resource "azurerm_hdinsight_kafka_cluster" "kafka_cluster" {
   name                = "kafka-cluster"
   resource_group_name = var.resource_group_name
   location            = var.location
-  cluster_version     = "4.0"
+  cluster_version     = "5.0"
   tier                = "Standard"
   encryption_in_transit_enabled = true
   network {
@@ -76,6 +76,7 @@ resource "azurerm_hdinsight_kafka_cluster" "kafka_cluster" {
       username  = "https://${var.keyvault_name}.vault.azure.net/secrets/${var.kafka_zookeeper_node_username}"
       password  = "https://${var.keyvault_name}.vault.azure.net/secrets/${var.kafka_zookeeper_node_password}"
       subnet_id = var.subnet_ids[5]
+      virtual_network_id = var.vnet_id
     }
   }
 
