@@ -1,6 +1,6 @@
 // create keyvault
 resource "azurerm_key_vault" "keyvault" {
-    name                        = "cloudkeyvault"
+    name                        = "cloudkeyvault-kv"
     location                    = var.location
     resource_group_name         = var.resource_group_name
     tenant_id                   = data.azurerm_client_config.current.tenant_id
