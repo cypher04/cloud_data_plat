@@ -16,6 +16,31 @@ resource "azurerm_storage_container" "storage_container" {
 }
 
 
+locals {
+  kafka_secret_names = {
+    gateway_user    = var.kafka_gateway_name
+    gateway_pass    = var.kafka_gateway_password
+    head_user       = var.kafka_head_node_username
+    head_pass       = var.kafka_head_node_password
+    worker_user     = var.kafka_worker_node_username
+    worker_pass     = var.kafka_worker_node_password
+    zookeeper_user  = var.kafka_zookeeper_node_username
+    zookeeper_pass  = var.kafka_zookeeper_node_password
+  }
+}
+
+data "azurerm_key_vault" "kv" {
+  name                = var.keyvault_name
+  resource_group_name = var.resource_group_name
+  depends_on = [var.keyvault_name]
+}
+
+data "azurerm_key_vault_secret" "kafka" {
+  for_each     = local.kafka_secret_names
+  name         = each.value
+  key_vault_id = data.azurerm_key_vault.kv.id
+}
+
 
 
 // create kafka cluster
@@ -39,9 +64,11 @@ resource "azurerm_hdinsight_kafka_cluster" "kafka_cluster" {
 
 
 
+
+
   gateway {
-    username = "https://${var.keyvault_name}.vault.azure.net/secrets/${var.kafka_gateway_name}"
-    password = "https://${var.keyvault_name}.vault.azure.net/secrets/${var.kafka_gateway_password}"
+    username = "admin"
+    password = data.azurerm_key_vault_secret.kafka["gateway_pass"].value
   }
 
   storage_account {
@@ -53,8 +80,8 @@ resource "azurerm_hdinsight_kafka_cluster" "kafka_cluster" {
   roles {
     head_node {
       vm_size   = "Standard_D3_V2"
-      username  = "https://${var.keyvault_name}.vault.azure.net/secrets/${var.kafka_head_node_username}"
-      password  = "https://${var.keyvault_name}.vault.azure.net/secrets/${var.kafka_head_node_password}"
+      username  = data.azurerm_key_vault_secret.kafka["head_user"].value
+      password  = data.azurerm_key_vault_secret.kafka["head_pass"].value
       subnet_id = var.subnet_ids[5]
       virtual_network_id = var.vnet_id
       script_actions {
@@ -64,8 +91,8 @@ resource "azurerm_hdinsight_kafka_cluster" "kafka_cluster" {
     }
     worker_node {
       vm_size   = "Standard_D3_V2"
-      username  = "https://${var.keyvault_name}.vault.azure.net/secrets/${var.kafka_worker_node_username}"
-      password  = "https://${var.keyvault_name}.vault.azure.net/secrets/${var.kafka_worker_node_password}"
+      username  = data.azurerm_key_vault_secret.kafka["worker_user"].value
+      password  = data.azurerm_key_vault_secret.kafka["worker_pass"].value
       subnet_id = var.subnet_ids[5]
       virtual_network_id = var.vnet_id
       target_instance_count = 3
@@ -73,8 +100,8 @@ resource "azurerm_hdinsight_kafka_cluster" "kafka_cluster" {
     }
     zookeeper_node {
       vm_size   = "Standard_D3_V2"
-      username  = "https://${var.keyvault_name}.vault.azure.net/secrets/${var.kafka_zookeeper_node_username}"
-      password  = "https://${var.keyvault_name}.vault.azure.net/secrets/${var.kafka_zookeeper_node_password}"
+      username  = data.azurerm_key_vault_secret.kafka["zookeeper_user"].value
+      password  = data.azurerm_key_vault_secret.kafka["zookeeper_pass"].value
       subnet_id = var.subnet_ids[5]
       virtual_network_id = var.vnet_id
     }
