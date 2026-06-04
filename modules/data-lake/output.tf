@@ -1,4 +1,4 @@
-output "storage_account_id" {
+output "datalake_storage_account_id" {
     value = azurerm_storage_account.cloudstorage.id
 }
 

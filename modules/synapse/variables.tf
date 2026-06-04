@@ -8,8 +8,13 @@ variable "location" {
     type        = string
 }
 
-variable "storage_account_id" {
-    description = "The ID of the storage account to be used by the Synapse workspace."
+# variable "storage_account_id" {
+#     description = "The ID of the storage account to be used by the Synapse workspace."
+#     type        = string
+# }
+
+variable "datalake_storage_account_id" {
+    description = "The ID of the Data Lake Storage account to be used by the Synapse workspace."
     type        = string
 }
 

@@ -50,9 +50,10 @@ module "synapse" {
     subnet_prefixes     = var.subnet_prefixes
     admin_username      = var.admin_username
     admin_password      = var.admin_password
-    storage_account_id = module.data-lake.storage_account_id
+    # storage_account_id = module.data-lake.storage_account_id
     storage_datalake_gen2_id = module.data-lake.storage_datalake_gen2_id
     synapse_firewall_name = module.security.synapse_firewall_name
+    datalake_storage_account_id = module.data-lake.datalake_storage_account_id
 
 }
 

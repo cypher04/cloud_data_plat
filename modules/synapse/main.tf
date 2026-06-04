@@ -31,14 +31,26 @@ resource "azurerm_storage_account" "synapse_storage_account" {
   account_kind             = "BlobStorage"
 }
 
-resource "azurerm_synapse_managed_private_endpoint" "synapse_managed_private_endpoint" {
-  name                = "synapse-managed-private-endpoint"
-  synapse_workspace_id = azurerm_synapse_workspace.synapse_workspace.id
-  target_resource_id   = azurerm_storage_account.synapse_storage_account.id
-  subresource_name               = "blob"
+# resource "azurerm_synapse_managed_private_endpoint" "synapse_managed_private_endpoint" {
+#   name                = "synapse-managed-private-endpoint"
+#   synapse_workspace_id = azurerm_synapse_workspace.synapse_workspace.id
+#   target_resource_id   = azurerm_storage_account.synapse_storage_account.id
+#   subresource_name               = "blob"
   
-  depends_on = [var.synapse_firewall_name]
+#   depends_on = [var.synapse_firewall_name]
+# }
+
+// role assignment for synapse workspace identity to access datalake storage account
+resource "azurerm_role_assignment" "synapse_storage_account_role_assignment" {
+  scope                = var.datalake_storage_account_id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = azurerm_synapse_workspace.synapse_workspace.identity[0].principal_id
 }
 
-
-
+// managed private endpoint for synapse workspace to access datalake storage account
+resource "azurerm_synapse_managed_private_endpoint" "synapse_datalake_gen2_managed_private_endpoint" {
+  name                = "synapse-datalake-gen2-managed-private-endpoint"
+  synapse_workspace_id = azurerm_synapse_workspace.synapse_workspace.id
+  target_resource_id   = var.datalake_storage_account_id
+  subresource_name               = "dfs"
+}
