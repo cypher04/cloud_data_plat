@@ -51,3 +51,24 @@ variable "kafka_zookeeper_node_password" {
   type        = string
   sensitive   = true
 }
+
+// variables for github repo connector for synapse
+variable "github_repo_url" {
+  description = "The URL of the GitHub repository for Synapse"
+  type        = string
+}
+
+variable "github_repo_branch" {
+  description = "The branch of the GitHub repository for Synapse"
+  type        = string
+}
+
+variable "github_account_name" {
+  description = "The GitHub account name for Synapse"
+  type        = string
+}
+
+variable "github_repo_name" {
+  description = "The name of the GitHub repository for Synapse"
+  type        = string
+}
