@@ -95,3 +95,28 @@ resource "azurerm_key_vault_secret" "kafka_zookeeper_node_password_secret" {
     key_vault_id = azurerm_key_vault.keyvault.id
 }
 
+
+// create key vault secrets for github repo connector for synapse
+resource "azurerm_key_vault_secret" "github_repo_url_secret" {
+    name         = "github-repo-url-secret"
+    value        = var.github_repo_url
+    key_vault_id = azurerm_key_vault.keyvault.id
+}
+
+resource "azurerm_key_vault_secret" "github_repo_branch_secret" {
+    name         = "github-repo-branch-secret"
+    value        = var.github_repo_branch
+    key_vault_id = azurerm_key_vault.keyvault.id
+}
+
+resource "azurerm_key_vault_secret" "github_account_name_secret" {
+    name         = "github-account-name-secret"
+    value        = var.github_account_name
+    key_vault_id = azurerm_key_vault.keyvault.id
+}
+
+resource "azurerm_key_vault_secret" "github_repo_name_secret" {
+    name         = "github-repo-name-secret"
+    value        = var.github_repo_name
+    key_vault_id = azurerm_key_vault.keyvault.id
+}

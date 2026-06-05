@@ -44,4 +44,36 @@ variable "synapse_firewall_name" {
     type        = string
 }
 
+variable "keyvault_name" {
+    description = "The name of the Key Vault to store secrets for the Synapse workspace."
+    type        = string
+}
+
+# variable "keyvault_id"{
+#     description = "The ID of the Key Vault to store secrets for the Synapse workspace."
+#     type        = string
+# }
+
+// variables for github repo connector for synapse
+variable "github_repo_url" {
+  description = "The URL of the GitHub repository for Synapse"
+  type        = string
+}
+
+variable "github_repo_branch" {
+  description = "The branch of the GitHub repository for Synapse"
+  type        = string
+}
+
+variable "github_account_name" {
+  description = "The GitHub account name for Synapse"
+  type        = string
+}
+
+variable "github_repo_name" {
+  description = "The name of the GitHub repository for Synapse"
+  type        = string
+}
+
+
 

@@ -1,3 +1,27 @@
+
+locals {
+  github_secret_names = {
+     "github-repo-url" = var.github_repo_url,
+     "github-repo-branch" = var.github_repo_branch,
+     "github-account-name" = var.github_account_name,
+     "github-repo-name" = var.github_repo_name
+  }
+} 
+
+
+data "azurerm_key_vault" "keyvault" {
+  name                = var.keyvault_name
+  resource_group_name = var.resource_group_name
+  depends_on = [var.keyvault_name]
+}
+
+data "azurerm_key_vault_secret" "github" {
+  for_each     = local.github_secret_names
+  name         = each.value
+  key_vault_id = data.azurerm_key_vault.keyvault.id
+}
+
+
 resource "azurerm_synapse_workspace" "synapse_workspace" {
   name                = "cloudsynapseworkspace"
   resource_group_name = var.resource_group_name
@@ -7,6 +31,14 @@ resource "azurerm_synapse_workspace" "synapse_workspace" {
   storage_data_lake_gen2_filesystem_id = var.storage_datalake_gen2_id
   managed_virtual_network_enabled = true
   data_exfiltration_protection_enabled = true
+
+  github_repo {
+    account_name = data.azurerm_key_vault_secret.github["github-account-name"].value
+    branch_name = data.azurerm_key_vault_secret.github["github-repo-branch"].value
+    repository_name = data.azurerm_key_vault_secret.github["github-repo-name"].value
+    git_url = data.azurerm_key_vault_secret.github["github-repo-url"].value
+    root_folder = "/"
+  }
   
   identity {
     type = "SystemAssigned"

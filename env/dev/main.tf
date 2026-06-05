@@ -54,6 +54,12 @@ module "synapse" {
     storage_datalake_gen2_id = module.data-lake.storage_datalake_gen2_id
     synapse_firewall_name = module.security.synapse_firewall_name
     datalake_storage_account_id = module.data-lake.datalake_storage_account_id
+    keyvault_name = module.keyvault.keyvault_name
+    github_repo_url = var.github_repo_url
+    github_repo_branch = var.github_repo_branch
+    github_account_name = var.github_account_name
+    github_repo_name = var.github_repo_name
+    # keyvault_id = module.keyvault.keyvault_id
 
 }
 
@@ -106,4 +112,8 @@ module "keyvault" {
     kafka_worker_node_password = var.kafka_worker_node_password
     kafka_zookeeper_node_name = var.kafka_zookeeper_node_name
     kafka_zookeeper_node_password = var.kafka_zookeeper_node_password
+    github_repo_url = var.github_repo_url
+    github_repo_branch = var.github_repo_branch
+    github_account_name = var.github_account_name
+    github_repo_name = var.github_repo_name
 }

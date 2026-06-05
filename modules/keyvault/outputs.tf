@@ -6,7 +6,9 @@ output "kafka_gateway_name_secret_name" {
     value = data.azurerm_key_vault_secret.kafka_gateway_name_secret.value
 }
 
-
+output "keyavult_id" {
+    value = azurerm_key_vault.keyvault.id
+}
 
 # // output the key vault secrets for kafka gateway
 # output "kafka_gateway_name_secret_name" {
