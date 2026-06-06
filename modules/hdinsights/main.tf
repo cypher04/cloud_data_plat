@@ -1,10 +1,16 @@
 // create storage account
 resource "azurerm_storage_account" "storage_account" {
-  name                     = "hdinsightstorageacct"
+  name                     = "hdinsightstorageacct${random_string.storage_account_suffix.result}"
   resource_group_name      = var.resource_group_name
   location                 = var.location
   account_tier             = "Standard"
   account_replication_type = "LRS"
+}
+
+resource "random_string" "storage_account_suffix" {
+  length  = 8
+  upper   = false
+  special = false
 }
 
 
@@ -15,30 +21,32 @@ resource "azurerm_storage_container" "storage_container" {
   container_access_type = "private"
 }
 
-
+data "azurerm_client_config" "current" {
+  
+}
 locals {
-  kafka_secret_names = {
-    gateway_user    = var.kafka_gateway_name
-    gateway_pass    = var.kafka_gateway_password
-    head_user       = var.kafka_head_node_username
-    head_pass       = var.kafka_head_node_password
-    worker_user     = var.kafka_worker_node_username
-    worker_pass     = var.kafka_worker_node_password
-    zookeeper_user  = var.kafka_zookeeper_node_username
-    zookeeper_pass  = var.kafka_zookeeper_node_password
+  kafka-secret-names = {
+    gateway-user    = var.kafka_gateway_name
+    gateway-pass    = var.kafka_gateway_password
+    head-user       = var.kafka_head_node_name
+    head-pass       = var.kafka_head_node_password
+    worker-user     = var.kafka_worker_node_name
+    worker-pass     = var.kafka_worker_node_password
+    zookeeper-user  = var.kafka_zookeeper_node_name
+    zookeeper-pass  = var.kafka_zookeeper_node_password
   }
 }
 
-data "azurerm_key_vault" "kv" {
+data "azurerm_key_vault" "keyvault" {
   name                = var.keyvault_name
   resource_group_name = var.resource_group_name
   depends_on = [var.keyvault_name]
 }
 
 data "azurerm_key_vault_secret" "kafka" {
-  for_each     = local.kafka_secret_names
+  for_each     = local.kafka-secret-names
   name         = each.value
-  key_vault_id = data.azurerm_key_vault.kv.id
+  key_vault_id = data.azurerm_key_vault.keyvault.id
 }
 
 
@@ -54,6 +62,9 @@ resource "azurerm_hdinsight_kafka_cluster" "kafka_cluster" {
   network {
     connection_direction = "Inbound"
   }
+
+
+  
   
 
   component_version {
@@ -68,7 +79,7 @@ resource "azurerm_hdinsight_kafka_cluster" "kafka_cluster" {
 
   gateway {
     username = "admin"
-    password = data.azurerm_key_vault_secret.kafka["gateway_pass"].value
+    password = data.azurerm_key_vault_secret.kafka["gateway-pass"].value
   }
 
   storage_account {
@@ -80,8 +91,8 @@ resource "azurerm_hdinsight_kafka_cluster" "kafka_cluster" {
   roles {
     head_node {
       vm_size   = "Standard_D3_V2"
-      username  = data.azurerm_key_vault_secret.kafka["head_user"].value
-      password  = data.azurerm_key_vault_secret.kafka["head_pass"].value
+      username  = data.azurerm_key_vault_secret.kafka["head-user"].value
+      password  = data.azurerm_key_vault_secret.kafka["head-pass"].value
       subnet_id = var.subnet_ids[5]
       virtual_network_id = var.vnet_id
       script_actions {
@@ -91,8 +102,8 @@ resource "azurerm_hdinsight_kafka_cluster" "kafka_cluster" {
     }
     worker_node {
       vm_size   = "Standard_D3_V2"
-      username  = data.azurerm_key_vault_secret.kafka["worker_user"].value
-      password  = data.azurerm_key_vault_secret.kafka["worker_pass"].value
+      username  = data.azurerm_key_vault_secret.kafka["worker-user"].value
+      password  = data.azurerm_key_vault_secret.kafka["worker-pass"].value
       subnet_id = var.subnet_ids[5]
       virtual_network_id = var.vnet_id
       target_instance_count = 3
@@ -100,12 +111,23 @@ resource "azurerm_hdinsight_kafka_cluster" "kafka_cluster" {
     }
     zookeeper_node {
       vm_size   = "Standard_D3_V2"
-      username  = data.azurerm_key_vault_secret.kafka["zookeeper_user"].value
-      password  = data.azurerm_key_vault_secret.kafka["zookeeper_pass"].value
+      username  = data.azurerm_key_vault_secret.kafka["zookeeper-user"].value
+      password  = data.azurerm_key_vault_secret.kafka["zookeeper-pass"].value
       subnet_id = var.subnet_ids[5]
       virtual_network_id = var.vnet_id
     }
   }
 
 
+}
+
+// RBAC for the cluster to access key vault secrets
+resource "azurerm_role_assignment" "hdinsight_kv_access" {
+  scope                = data.azurerm_key_vault.keyvault.id
+  role_definition_name = "Key Vault Secrets User"
+
+  // which identity to assign the role to, in this case it's the cluster's managed identity
+// since i passed the secret values to the cluster configuration (using data sources), technically the cluster doesn't need access to the key vault, but i assign the role to the SP anyway for better security practice, in case the cluster needs to access the secrets in the future without using data sources
+
+  principal_id         = data.azurerm_client_config.current.object_id
 }
