@@ -14,3 +14,7 @@ output "synapse_storage_account_id" {
 output "synapse_connectivity_endpoints" {
     value = azurerm_synapse_workspace.synapse_workspace.connectivity_endpoints
 }
+
+output "synapse_principal_id" {
+    value = azurerm_synapse_workspace.synapse_workspace.identity[0].principal_id
+}

@@ -79,6 +79,14 @@ resource "azurerm_role_assignment" "synapse_storage_account_role_assignment" {
   principal_id         = azurerm_synapse_workspace.synapse_workspace.identity[0].principal_id
 }
 
+
+// role assignment for synapse workspace identity to access key vault
+resource "azurerm_role_assignment" "synapse_keyvault_role_assignment" {
+  scope                = data.azurerm_key_vault.keyvault.id
+  role_definition_name = "Key Vault Secrets User"
+  principal_id         = azurerm_synapse_workspace.synapse_workspace.identity[0].principal_id
+}
+
 // managed private endpoint for synapse workspace to access datalake storage account
 resource "azurerm_synapse_managed_private_endpoint" "synapse_datalake_gen2_managed_private_endpoint" {
   name                = "synapse-datalake-gen2-managed-private-endpoint"
