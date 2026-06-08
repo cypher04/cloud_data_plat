@@ -1,5 +1,5 @@
 resource "azurerm_storage_account" "cloudstorage" {
-  name                     = "cloudstorage"
+  name                     = "cloudstoragedl${random_string.storage_account_suffix.result}"
   resource_group_name      = var.resource_group_name
   location                 = var.location
   account_tier             = "Standard"
@@ -9,11 +9,20 @@ resource "azurerm_storage_account" "cloudstorage" {
   
 }
 
+// create random string for unique storage account name
+resource "random_string" "storage_account_suffix" {
+  length  = 4
+  upper   = false
+  special = false
+}
+
 
 
 resource "azurerm_storage_data_lake_gen2_filesystem" "cloudfilesystem" {
   name               = "cloudfilesystem"
   storage_account_id = azurerm_storage_account.cloudstorage.id
+  depends_on = [ azurerm_storage_account.cloudstorage ]
+
 
   properties = {
     hello = "aGVsbG8="
@@ -25,6 +34,8 @@ resource "azurerm_storage_data_lake_gen2_path" "cloudpath" {
   filesystem_name    = azurerm_storage_data_lake_gen2_filesystem.cloudfilesystem.name
   storage_account_id = azurerm_storage_account.cloudstorage.id
   resource           = "directory"
+
+  depends_on = [ azurerm_storage_account.cloudstorage ]
 }
 
 resource "azurerm_storage_container" "cloudcontainer" {
