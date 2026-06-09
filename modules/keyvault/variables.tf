@@ -8,6 +8,13 @@ variable "location" {
     type        = string
 }
 
+
+
+variable "keyvault_id" {
+    description = "The ID of the key vault where the secrets will be stored."
+    type        = string
+}
+
 variable "kafka_gateway_name" {
   description = "The name of the Kafka gateway"
   type        = string
