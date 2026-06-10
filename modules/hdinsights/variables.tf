@@ -14,46 +14,51 @@ variable "keyvault_name" {
   type        = string
 }
 
+variable"keyvault_id" {
+  description = "The ID of the Azure Key Vault to store the cluster credentials."
+  type        = string
+}
+
 variable "kafka_gateway_name" {
   description = "The name of the secret in Azure Key Vault that contains the gateway username."
   type        = string
 }
 
-variable "kafka_gateway_password" {
+variable "kafka_gateway_password_secret_name" {
   description = "The name of the secret in Azure Key Vault that contains the gateway password."
   type        = string
 }
 
 // variable for kafka head node
-variable "kafka_head_node_name" {
+variable "kafka_head_node_name_secret_name" {
   description = "The name of the secret in Azure Key Vault that contains the Kafka head node username."
   type        = string
 }
 
-variable "kafka_head_node_password" {
+variable "kafka_head_node_password_secret_name" {
   description = "The name of the secret in Azure Key Vault that contains the Kafka head node password."
   type        = string
 }
 
 // variable for kafka worker node
-variable "kafka_worker_node_name" {
+variable "kafka_worker_node_secret_name" {
   description = "The name of the secret in Azure Key Vault that contains the Kafka worker node username."
   type        = string
 }
 
-variable "kafka_worker_node_password" {
+variable "kafka_worker_node_password_secret_name" {
   description = "The name of the secret in Azure Key Vault that contains the Kafka worker node password."
   type        = string
 }
 
 // variable for kafka zookeeper node
 
-variable "kafka_zookeeper_node_name" {
+variable "kafka_zookeeper_node_secret_name" {
   description = "The name of the secret in Azure Key Vault that contains the Kafka zookeeper node username."
   type        = string
 }
 
-variable "kafka_zookeeper_node_password" {
+variable "kafka_zookeeper_node_password_secret_name" {
   description = "The name of the secret in Azure Key Vault that contains the Kafka zookeeper node password."
   type        = string
 }
