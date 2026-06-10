@@ -8,7 +8,7 @@ resource "azurerm_storage_account" "storage_account" {
 }
 
 resource "random_string" "storage_account_suffix" {
-  length  = 8
+  length  = 4
   upper   = false
   special = false
 }
@@ -27,20 +27,20 @@ data "azurerm_client_config" "current" {
 locals {
   kafka-secret-names = {
     gateway-user    = var.kafka_gateway_name
-    gateway-pass    = var.kafka_gateway_password
-    head-user       = var.kafka_head_node_name
-    head-pass       = var.kafka_head_node_password
-    worker-user     = var.kafka_worker_node_name
-    worker-pass     = var.kafka_worker_node_password
-    zookeeper-user  = var.kafka_zookeeper_node_name
-    zookeeper-pass  = var.kafka_zookeeper_node_password
+    gateway-pass    = var.kafka_gateway_password_secret_name
+    head-user       = var.kafka_head_node_name_secret_name
+    head-pass       = var.kafka_head_node_password_secret_name
+    worker-user     = var.kafka_worker_node_secret_name
+    worker-pass     = var.kafka_worker_node_password_secret_name
+    zookeeper-user  = var.kafka_zookeeper_node_secret_name
+    zookeeper-pass  = var.kafka_zookeeper_node_password_secret_name
   }
 }
 
 data "azurerm_key_vault" "keyvault" {
   name                = var.keyvault_name
   resource_group_name = var.resource_group_name
-  depends_on = [var.keyvault_name]
+  
 }
 
 data "azurerm_key_vault_secret" "kafka" {
@@ -123,11 +123,17 @@ resource "azurerm_hdinsight_kafka_cluster" "kafka_cluster" {
 
 // RBAC for the cluster to access key vault secrets
 resource "azurerm_role_assignment" "hdinsight_kv_access" {
-  scope                = data.azurerm_key_vault.keyvault.id
-  role_definition_name = "Key Vault Secrets User"
+  scope                = var.keyvault_id
+  role_definition_name = "Key Vault Administrator"
 
   // which identity to assign the role to, in this case it's the cluster's managed identity
 // since i passed the secret values to the cluster configuration (using data sources), technically the cluster doesn't need access to the key vault, but i assign the role to the SP anyway for better security practice, in case the cluster needs to access the secrets in the future without using data sources
 
   principal_id         = data.azurerm_client_config.current.object_id
+  
+}
+
+resource "time_sleep" "wait_30_seconds" {
+  depends_on = [azurerm_role_assignment.hdinsight_kv_access]
+  create_duration = "30s"
 }
