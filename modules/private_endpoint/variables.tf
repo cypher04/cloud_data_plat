@@ -15,6 +15,11 @@ variable "location" {
 #     }))
 # }
 
+variable "datalake_storage_account_id" {
+    description = "The ID of the data lake storage account to which the private endpoint will connect."
+    type        = string
+}
+
 variable "synapse_workspace_id" {
     description = "The ID of the Synapse workspace to which the private endpoint will connect."
     type        = string
