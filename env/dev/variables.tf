@@ -100,3 +100,7 @@ variable "github_repo_name" {
   type        = string
 }
 
+variable "subscription_id" {
+  description = "The subscription ID for the Azure resources"
+  type        = string
+}
