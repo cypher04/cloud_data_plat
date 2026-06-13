@@ -15,18 +15,20 @@ resource "azurerm_storage_account" "state_storage" {
   account_replication_type = "LRS"
 
     lifecycle {
-        prevent_destroy = true
+        prevent_destroy = false
     }
+
+  
 
     min_tls_version = "TLS1_2"
     https_traffic_only_enabled = true
 
     blob_properties {
-      versioning_enabled = true
+      versioning_enabled = false
 
-      delete_retention_policy {
-        days = 30
-      }
+      # delete_retention_policy {
+      #   days = 30
+      # }
     }
 }
 
