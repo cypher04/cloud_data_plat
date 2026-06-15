@@ -73,3 +73,8 @@ variable "vnet_id" {
   description = "The ID of the virtual network to which the HDInsight cluster will be connected."
   type        = string
 }
+
+variable "datalake_storage_account_id" {
+  description = "The ID of the Azure Data Lake Storage account to be used with the HDInsight cluster."
+  type        = string
+}
