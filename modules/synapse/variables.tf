@@ -39,10 +39,10 @@ variable "subnet_prefixes" {
     type        = map(string)
 }
 
-variable "synapse_firewall_name" {
-    description = "The name of the Synapse firewall rule."
-    type        = string
-}
+# variable "synapse_firewall_name" {
+#     description = "The name of the Synapse firewall rule."
+#     type        = string
+# }
 
 variable "keyvault_name" {
     description = "The name of the Key Vault to store secrets for the Synapse workspace."
