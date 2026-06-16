@@ -8,11 +8,17 @@ locals {
   }
 } 
 
+resource "random_string" "random_string" {
+  length  = 4
+  upper   = false
+  special = false
+}
+
 
 data "azurerm_key_vault" "keyvault" {
   name                = var.keyvault_name
   resource_group_name = var.resource_group_name
-  depends_on = [var.keyvault_name]
+  
 }
 
 data "azurerm_key_vault_secret" "github" {
@@ -55,7 +61,7 @@ resource "azurerm_synapse_sql_pool" "sql_pool" {
 }
 
 resource "azurerm_storage_account" "synapse_storage_account" {
-  name                     = "cloudsynapsestorage"
+  name                     = "cloudsynapsestorage${random_string.random_string.result}"
   resource_group_name      = var.resource_group_name
   location                 = var.location
   account_tier             = "Standard"
@@ -63,14 +69,36 @@ resource "azurerm_storage_account" "synapse_storage_account" {
   account_kind             = "BlobStorage"
 }
 
-# resource "azurerm_synapse_managed_private_endpoint" "synapse_managed_private_endpoint" {
-#   name                = "synapse-managed-private-endpoint"
-#   synapse_workspace_id = azurerm_synapse_workspace.synapse_workspace.id
-#   target_resource_id   = azurerm_storage_account.synapse_storage_account.id
-#   subresource_name               = "blob"
+
+// firewall rule for synapse workspace to allow access from all azure services
+
+data "http" "public_ip" {
+  url = "https://api.ipify.org"
+}
+
+
+resource "azurerm_synapse_firewall_rule" "runner" {
+  name                = "AllowTerraformRunner"
+  synapse_workspace_id = azurerm_synapse_workspace.synapse_workspace.id
+  start_ip_address    = chomp(data.http.public_ip.response_body)
+    end_ip_address      = chomp(data.http.public_ip.response_body)
+}
+
+resource "azurerm_synapse_firewall_rule" "allow_azure_services" {
+  name                = "AllowAllWindowsAzureIps"
+  synapse_workspace_id = azurerm_synapse_workspace.synapse_workspace.id
+  start_ip_address    = "0.0.0.0"
+  end_ip_address      = "0.0.0.0"
+}
+
+resource "azurerm_synapse_managed_private_endpoint" "synapse_managed_private_endpoint" {
+  name                = "synapse-managed-private-endpoint"
+  synapse_workspace_id = azurerm_synapse_workspace.synapse_workspace.id
+  target_resource_id   = azurerm_storage_account.synapse_storage_account.id
+  subresource_name               = "blob"
   
-#   depends_on = [var.synapse_firewall_name]
-# }
+  depends_on = [azurerm_synapse_firewall_rule.runner]
+}
 
 // role assignment for synapse workspace identity to access datalake storage account
 resource "azurerm_role_assignment" "synapse_storage_account_role_assignment" {
@@ -93,4 +121,6 @@ resource "azurerm_synapse_managed_private_endpoint" "synapse_datalake_gen2_manag
   synapse_workspace_id = azurerm_synapse_workspace.synapse_workspace.id
   target_resource_id   = var.datalake_storage_account_id
   subresource_name               = "dfs"
+
+  depends_on = [azurerm_synapse_firewall_rule.runner]
 }
