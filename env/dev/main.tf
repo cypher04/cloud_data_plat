@@ -1,7 +1,7 @@
-# import{
-#   to = azurerm_resource_group.clouddata-rg
-#   id = "/subscriptions/fe797b99-c79d-4fe3-baa0-091bacc96c3a/resourceGroups/clouddata"
-# }
+import{
+  to = azurerm_resource_group.clouddata-rg
+  id = "/subscriptions/fe797b99-c79d-4fe3-baa0-091bacc96c3a/resourceGroups/clouddata"
+}
 
 resource "azurerm_resource_group" "clouddata-rg" {
   name     = var.resource_group_name
@@ -59,7 +59,7 @@ module "synapse" {
     admin_password      = var.admin_password
     # storage_account_id = module.data-lake.storage_account_id
     storage_datalake_gen2_id = module.data-lake.storage_datalake_gen2_id
-    synapse_firewall_name = module.security.synapse_firewall_name
+    # synapse_firewall_name = module.security.synapse_firewall_name
     datalake_storage_account_id = module.data-lake.datalake_storage_account_id
     keyvault_name = module.keyvault.keyvault_name
     github_repo_url = module.keyvault.github_repo_url_secret_name
@@ -71,12 +71,12 @@ module "synapse" {
 
 }
 
-module "security" {
-    source              = "../../modules/security"
-    resource_group_name = azurerm_resource_group.clouddata-rg.name
-    location            = var.location
-    synapse_workspace_id = module.synapse.synapse_workspace_id
-}
+# module "security" {
+#     source              = "../../modules/security"
+#     resource_group_name = azurerm_resource_group.clouddata-rg.name
+#     location            = var.location
+#     synapse_workspace_id = module.synapse.synapse_workspace_id
+# }
 
 module "private_endpoint" {
     source              = "../../modules/private_endpoint"
@@ -89,10 +89,11 @@ module "private_endpoint" {
     synapse_sql_pool_id = module.synapse.synapse_sql_pool_id
     synapse_storage_account_id = module.synapse.synapse_storage_account_id
     datalake_storage_account_id = module.data-lake.datalake_storage_account_id
+    eventhub_id = module.eventhub.eventhub_id
 }
 
-module "hdinsights" {
-    source              = "../../modules/hdinsights"
+module "eventhub" {
+    source              = "../../modules/eventhub"
     resource_group_name = azurerm_resource_group.clouddata-rg.name
     location            = var.location
     vnet_id = module.networking.vnet_id
@@ -107,6 +108,7 @@ module "hdinsights" {
     kafka_gateway_password_secret_name = module.keyvault.kafka_gateway_password_secret_name
     kafka_head_node_password_secret_name = module.keyvault.kafka_head_node_password_secret_name
     kafka_worker_node_password_secret_name = module.keyvault.kafka_worker_node_password_secret_name
+    datalake_storage_account_id = module.data-lake.datalake_storage_account_id
     depends_on = [ module.keyvault ]
 
     
