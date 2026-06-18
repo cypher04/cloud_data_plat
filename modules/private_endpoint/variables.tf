@@ -49,3 +49,8 @@ variable "synapse_storage_account_id" {
     description = "The ID of the Synapse storage account to which the private endpoint will connect."
     type        = string
 }
+
+variable "eventhub_id" {
+    description = "The ID of the Event Hub to which the private endpoint will connect."
+    type        = string
+}
