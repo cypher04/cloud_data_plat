@@ -13,10 +13,20 @@ terraform {
     source  = "hashicorp/time"
     version = "0.14.0"
   }
+
+  http ={
+    source  = "hashicorp/http"
+    version = "3.4.0"
+}
 }
 }
 
 provider "azurerm" {
-  features {}
+  features {
+    resource_group {
+      prevent_deletion_if_contains_resources = false
+    }
+
+  }
 }
 
