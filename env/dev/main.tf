@@ -71,12 +71,6 @@ module "synapse" {
 
 }
 
-# module "security" {
-#     source              = "../../modules/security"
-#     resource_group_name = azurerm_resource_group.clouddata-rg.name
-#     location            = var.location
-#     synapse_workspace_id = module.synapse.synapse_workspace_id
-# }
 
 module "private_endpoint" {
     source              = "../../modules/private_endpoint"
